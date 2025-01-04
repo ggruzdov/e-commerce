@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: e-commerce
+  docker:
+    compose:
+      skip:
+        in-tests: false
+      stop:
+        command: down
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/ecommerce
+    username: admin
+    password: password
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
