@@ -1,11 +1,11 @@
 # Introduction
-The idea behind this project was to find answers to the next questions:
+The idea behind this project was to address next questions:
 - What way would be optimal to store entities like e-commerce products which have some common attributes as well as dynamic ones?
-- How do we implement dynamically filtered product search? I.e. we search TVs and Washing Machines by different attributes.
+- How do we implement product search with dynamic filters? I.e. we search TVs and Washing Machines by different attributes.
 - How do we implement full-text search? Say, I want to find "Gaming laptop I7".
 - How do we implement pagination?
 
-Moreover, how can we answer to all the questions and keep infrastructure simple? I.e. not to involve additional technologies 
+Moreover, how can we answer all the questions and keep the infrastructure simple? I.e. not to involve additional technologies 
 such as MongoDB or ElasticSearch and at the same make the solution as flexible as possible(like new products addition).
 And here comes plain old Postgres to the rescue.
 
