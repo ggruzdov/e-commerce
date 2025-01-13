@@ -1,6 +1,6 @@
-package com.ggruzdov.code.examples.ecommerce.response;
+package com.github.ggruzdov.ecommerce.response;
 
-import com.ggruzdov.code.examples.ecommerce.model.Product;
+import com.github.ggruzdov.ecommerce.model.Product;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -8,7 +8,7 @@
         <version>3.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ggruzdov.code.examples</groupId>
+    <groupId>com.github.ggruzdov</groupId>
     <artifactId>e-commerce</artifactId>
     <version>1.0.0</version>
 

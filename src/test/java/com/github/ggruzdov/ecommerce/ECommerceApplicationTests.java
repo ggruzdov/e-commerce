@@ -1,10 +1,10 @@
-package com.ggruzdov.code.examples.ecommerce;
+package com.github.ggruzdov.ecommerce;
 
-import com.ggruzdov.code.examples.ecommerce.request.Pagination;
-import com.ggruzdov.code.examples.ecommerce.request.ProductFilterSearchRequest;
-import com.ggruzdov.code.examples.ecommerce.request.ProductFullTextSearchRequest;
-import com.ggruzdov.code.examples.ecommerce.request.SortCriteria;
-import com.ggruzdov.code.examples.ecommerce.service.ProductSearchService;
+import com.github.ggruzdov.ecommerce.request.Pagination;
+import com.github.ggruzdov.ecommerce.request.ProductFilterSearchRequest;
+import com.github.ggruzdov.ecommerce.request.ProductFullTextSearchRequest;
+import com.github.ggruzdov.ecommerce.request.SortCriteria;
+import com.github.ggruzdov.ecommerce.service.ProductSearchService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

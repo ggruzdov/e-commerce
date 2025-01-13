@@ -1,4 +1,4 @@
-package com.ggruzdov.code.examples.ecommerce.request;
+package com.github.ggruzdov.ecommerce.request;
 
 import jakarta.validation.constraints.NotNull;
 

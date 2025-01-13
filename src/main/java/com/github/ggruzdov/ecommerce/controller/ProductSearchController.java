@@ -1,9 +1,9 @@
-package com.ggruzdov.code.examples.ecommerce.controller;
+package com.github.ggruzdov.ecommerce.controller;
 
-import com.ggruzdov.code.examples.ecommerce.request.ProductFilterSearchRequest;
-import com.ggruzdov.code.examples.ecommerce.request.ProductFullTextSearchRequest;
-import com.ggruzdov.code.examples.ecommerce.response.ProductSearchResponse;
-import com.ggruzdov.code.examples.ecommerce.service.ProductSearchService;
+import com.github.ggruzdov.ecommerce.request.ProductFilterSearchRequest;
+import com.github.ggruzdov.ecommerce.request.ProductFullTextSearchRequest;
+import com.github.ggruzdov.ecommerce.response.ProductSearchResponse;
+import com.github.ggruzdov.ecommerce.service.ProductSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

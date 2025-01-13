@@ -1,4 +1,4 @@
-package com.ggruzdov.code.examples.ecommerce.model;
+package com.github.ggruzdov.ecommerce.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

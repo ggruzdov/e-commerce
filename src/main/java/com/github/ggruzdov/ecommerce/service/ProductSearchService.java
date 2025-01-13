@@ -1,11 +1,11 @@
-package com.ggruzdov.code.examples.ecommerce.service;
+package com.github.ggruzdov.ecommerce.service;
 
-import com.ggruzdov.code.examples.ecommerce.request.Pagination;
-import com.ggruzdov.code.examples.ecommerce.request.ProductFilterSearchRequest;
-import com.ggruzdov.code.examples.ecommerce.request.ProductFullTextSearchRequest;
-import com.ggruzdov.code.examples.ecommerce.response.ProductSearchResponse;
-import com.ggruzdov.code.examples.ecommerce.request.SortCriteria;
-import com.ggruzdov.code.examples.ecommerce.model.Product;
+import com.github.ggruzdov.ecommerce.request.Pagination;
+import com.github.ggruzdov.ecommerce.request.ProductFilterSearchRequest;
+import com.github.ggruzdov.ecommerce.request.ProductFullTextSearchRequest;
+import com.github.ggruzdov.ecommerce.response.ProductSearchResponse;
+import com.github.ggruzdov.ecommerce.request.SortCriteria;
+import com.github.ggruzdov.ecommerce.model.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;

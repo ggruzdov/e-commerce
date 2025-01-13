@@ -1,4 +1,4 @@
-package com.ggruzdov.code.examples.ecommerce;
+package com.github.ggruzdov.ecommerce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
