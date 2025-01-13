@@ -1,27 +1,38 @@
-# E-commerce Product Search Demo
-A demonstration project showcasing advanced product search functionality with dynamic attributes using PostgreSQL and Spring Data JPA.
+# Introduction
+The idea behind this project was to find answers to the next questions:
+- What way would be optimal to store entities like e-commerce products which have some common attributes as well as dynamic ones?
+- How do we implement dynamically filtered product search? I.e. we search TVs and Washing Machines by different attributes.
+- How do we implement full-text search? Say, I want to find "Gaming laptop I7".
+- How do we implement pagination?
+
+Moreover, how can we answer to all the questions and keep infrastructure simple? I.e. not to involve additional technologies 
+such as MongoDB or ElasticSearch and at the same make the solution as flexible as possible(like new products addition).
+And here comes plain old Postgres to the rescue.
 
 ## Key Features
-- Dynamic product attributes storage using PostgreSQL JSONB
+- Dynamic product attributes storage
 - Flexible search query builder
 - Full-text search capabilities
-- Simple infrastructure setup
+- Pagination
 
 ## Technical Implementation
-- PostgreSQL as the primary database
+- Postgres as the primary database
+- Flyway migrations
+- Spring Boot 3.4.1
+- Java 21
+- Docker and Docker Compose
 - JSONB type for flexible product attributes
 - Functional GIN index on product descriptions for optimized full-text search
-- Full-text search using PostgreSQL's `websearch_to_tsquery`
-- Integration with Spring Data JPA
+- Full-text search using Postgres `websearch_to_tsquery`
 - Native SQL queries with dynamic building
-- Random product data generation via SQL migrations
+- Random product data generation via SQL script
 
 ## Getting Started
 
 ### Prerequisites
-- Unix-like operating system
+- Unix-like operating system(for Windows just manually execute commands from shell scripts and use `mvnw.cmd` instead)
 - Docker and Docker Compose
-- `jq` tool (optional, for pretty-printing JSON responses)
+- `jq` tool (optional, for pretty-printing JSON responses in the usage examples down below)
 
 ### Installation
 
@@ -112,3 +123,4 @@ curl --location --request POST 'http://localhost:8080/products/search/full-text'
 3. Multi-language support implementation
 4. Advanced full-text search using various `to_tsquery` functions
 5. CRUD operations for categories and products with attribute validation
+6. Make filter operators as Enum

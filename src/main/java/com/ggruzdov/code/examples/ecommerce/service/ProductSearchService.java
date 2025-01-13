@@ -95,7 +95,7 @@ public class ProductSearchService {
         request.filters().forEach((attribute, condition) -> {
             switch (condition.operator()) {
                 case "eq" -> queryBuilder.append(format(" AND (p.attributes->>'%s') = %s::text", attribute, condition.value()));
-                case "ne" -> queryBuilder.append(format(" AND (p.attributes->>'%s') != %s", attribute, condition.value()));
+                case "ne" -> queryBuilder.append(format(" AND (p.attributes->>'%s') != %s::text", attribute, condition.value()));
                 case "gt" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC > %s", attribute, condition.value()));
                 case "lt" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC < %s", attribute, condition.value()));
                 case "gte" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC >= %s", attribute, condition.value()));

@@ -1,13 +1,7 @@
+include:
+  - compose-db.yml
+
 services:
-  postgres:
-    container_name: ecommerce-db
-    image: 'postgres:16.4'
-    environment:
-      - 'POSTGRES_DB=ecommerce'
-      - 'POSTGRES_PASSWORD=password'
-      - 'POSTGRES_USER=admin'
-    ports:
-      - '5432:5432'
   e-commerce:
     image: e-commerce/ggruzdov-demo-app:1.0
     container_name: e-commerce

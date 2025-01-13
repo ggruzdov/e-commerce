@@ -26,7 +26,7 @@ class ECommerceApplicationTests {
     void searchLaptopsByAttributes() {
         // Given
         var request = new ProductFilterSearchRequest(
-            2,
+            2, // laptops
             null,
             null,
             Map.of(
