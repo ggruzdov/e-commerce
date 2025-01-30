@@ -6,7 +6,7 @@ The idea behind this project was to address next questions:
 - How do we implement pagination?
 
 Moreover, how can we answer all the questions and keep the infrastructure simple? I.e. not to involve additional technologies 
-such as MongoDB or ElasticSearch and at the same make the solution as flexible as possible(like new products addition).
+such as MongoDB or ElasticSearch and at the same time make the solution as flexible as possible(like new products addition).
 And here comes plain old Postgres to the rescue.
 
 ## Key Features
