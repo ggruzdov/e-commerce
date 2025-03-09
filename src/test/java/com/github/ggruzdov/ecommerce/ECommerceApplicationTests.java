@@ -1,5 +1,6 @@
 package com.github.ggruzdov.ecommerce;
 
+import com.github.ggruzdov.ecommerce.request.FilterCondition;
 import com.github.ggruzdov.ecommerce.request.Pagination;
 import com.github.ggruzdov.ecommerce.request.ProductFilterSearchRequest;
 import com.github.ggruzdov.ecommerce.request.ProductFullTextSearchRequest;
@@ -30,23 +31,23 @@ class ECommerceApplicationTests {
             null,
             null,
             Map.of(
-                "RAM", new ProductFilterSearchRequest.FilterCondition("gte", 16, null, null, null),
-                "processor", new ProductFilterSearchRequest.FilterCondition("contains", "intel", null, null, null),
-                "screen_size", new ProductFilterSearchRequest.FilterCondition("between", null, null, 14.0, 15.6),
-                "storage_type", new ProductFilterSearchRequest.FilterCondition("in", null, List.of("SSD"), null, null)
+                "RAM", new FilterCondition("gte", 16, null, null, null),
+                "processor", new FilterCondition("contains", "intel", null, null, null),
+                "screen_size", new FilterCondition("between", null, null, 14.0, 15.6),
+                "storage_type", new FilterCondition("in", null, List.of("SSD"), null, null)
             ),
             new SortCriteria("price", "asc"),
             new Pagination(1, 20)
         );
 
         // When
-        var result = productSearchService.search(request);
+        var result = productSearchService.search(request).getContent();
 
         // Then
         assertFalse(result.isEmpty());
         result.forEach(laptop -> assertTrue(((String) laptop.attributes().get("processor")).toLowerCase().contains("intel")));
         // Check sort by price asc
-        assertTrue(result.getContent().getFirst().price().compareTo(result.getContent().getLast().price()) < 1);
+        assertTrue(result.getFirst().price().compareTo(result.getLast().price()) < 1);
     }
 
     @Test
@@ -55,7 +56,7 @@ class ECommerceApplicationTests {
         var phrase = " Dell!! !!   Intel@@#   i7   ";
 
         // When
-        var result = productSearchService.search(new ProductFullTextSearchRequest(phrase, null, null));
+        var result = productSearchService.search(new ProductFullTextSearchRequest(phrase, null, null)).getContent();
 
         // Then
         assertFalse(result.isEmpty());
@@ -64,6 +65,6 @@ class ECommerceApplicationTests {
             assertTrue(((String) laptop.attributes().get("processor")).toLowerCase().contains("intel"));
         } );
         // Check default sort by created_at desc
-        assertTrue(result.getContent().getFirst().createdAt().isAfter(result.getContent().getLast().createdAt()));
+        assertTrue(result.getFirst().createdAt().isAfter(result.getLast().createdAt()));
     }
 }

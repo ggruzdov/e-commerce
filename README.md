@@ -87,6 +87,11 @@ curl --location --request POST 'http://localhost:8080/products/search' \
         "storage_type": {
             "operator": "in",
             "values": ["NVMe"]
+        },
+        "storage_capacity": {
+            "operator": "between",
+            "fromValue": 256,
+            "toValue": 512
         }
     },
     "sort": {

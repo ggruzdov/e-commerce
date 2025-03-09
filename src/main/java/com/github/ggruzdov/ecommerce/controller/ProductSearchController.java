@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class ProductSearchController {
     private final ProductSearchService productSearchService;
 
     @PostMapping
-    public Page<ProductSearchResponse> search(@Valid @RequestBody ProductFilterSearchRequest request) {
+    public PagedModel<ProductSearchResponse> search(@Valid @RequestBody ProductFilterSearchRequest request) {
         log.info("Searching products: categoryId = {}, brand = {}, price = {}, filters: {}",
             request.categoryId(), request.brand(), request.price(), request.filters()
         );
@@ -30,7 +31,7 @@ public class ProductSearchController {
     }
 
     @PostMapping("/full-text")
-    public Page<ProductSearchResponse> search(@Valid @RequestBody ProductFullTextSearchRequest request) {
+    public PagedModel<ProductSearchResponse> search(@Valid @RequestBody ProductFullTextSearchRequest request) {
         log.info("Searching products by phrase: {}", request.phrase());
         return productSearchService.search(request);
     }

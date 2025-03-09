@@ -1,5 +1,7 @@
 package com.github.ggruzdov.ecommerce.service;
 
+import com.github.ggruzdov.ecommerce.component.FilterConditionValidator;
+import com.github.ggruzdov.ecommerce.component.Operators;
 import com.github.ggruzdov.ecommerce.request.Pagination;
 import com.github.ggruzdov.ecommerce.request.ProductFilterSearchRequest;
 import com.github.ggruzdov.ecommerce.request.ProductFullTextSearchRequest;
@@ -9,23 +11,23 @@ import com.github.ggruzdov.ecommerce.model.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
 public class ProductSearchService {
 
+    private final FilterConditionValidator filterConditionValidator;
+    private final AttributeDefinitionService attributeDefinitionService;
     private final EntityManager entityManager;
 
     /**
@@ -45,7 +47,7 @@ public class ProductSearchService {
      * @param request contains user search phrase, e.g. "Asus Intel i7".
      * @return paginated list of products corresponding to the search phrase.
      */
-    public Page<ProductSearchResponse> search(ProductFullTextSearchRequest request) {
+    public PagedModel<ProductSearchResponse> search(ProductFullTextSearchRequest request) {
         var queryBuilder = new StringBuilder(
             "SELECT * FROM products p WHERE p.description @@ websearch_to_tsquery(:phrase)"
         );
@@ -75,10 +77,15 @@ public class ProductSearchService {
      * @param request set of attributes to filter products.
      * @return paginated list of products corresponding to the set of filters.
      */
-    public Page<ProductSearchResponse> search(ProductFilterSearchRequest request) {
+    public PagedModel<ProductSearchResponse> search(ProductFilterSearchRequest request) {
         var queryBuilder = new StringBuilder("SELECT * FROM products p WHERE p.category_id = :categoryId");
         var params = new HashMap<String, Object>();
         params.put("categoryId", request.categoryId());
+
+        if (request.brand() != null) {
+            queryBuilder.append(" AND brand = :brand");
+            params.put("brand", request.brand());
+        }
 
         // Price range filter
         if (request.price() != null) {
@@ -92,33 +99,73 @@ public class ProductSearchService {
             }
         }
 
+        var categoryAttributeNames = attributeDefinitionService.getAttributeNames(request.categoryId());
         request.filters().forEach((attribute, condition) -> {
-            switch (condition.operator()) {
-                case "eq" -> queryBuilder.append(format(" AND (p.attributes->>'%s') = %s::text", attribute, condition.value()));
-                case "ne" -> queryBuilder.append(format(" AND (p.attributes->>'%s') != %s::text", attribute, condition.value()));
-                case "gt" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC > %s", attribute, condition.value()));
-                case "lt" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC < %s", attribute, condition.value()));
-                case "gte" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC >= %s", attribute, condition.value()));
-                case "lte" -> queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC <= %s", attribute, condition.value()));
-                case "in" -> {
-                    var values = condition.values()
-                        .stream()
-                        .map(s -> format("'%s'", s))
-                        .collect(Collectors.joining(","));
-                    queryBuilder.append(format(" AND (p.attributes->>'%s') IN (%s)", attribute, values));
+            if (!categoryAttributeNames.contains(attribute)) {
+                throw new IllegalArgumentException("Invalid attribute name: " + attribute);
+            }
+
+            if (!filterConditionValidator.isValidCondition(condition)) {
+                throw new IllegalArgumentException("Invalid value for condition: " + condition);
+            }
+
+            queryBuilder.append(" AND (p.attributes->>'");
+            String operator = condition.operator();
+            String paramName = operator + "_" + attribute;
+            switch (operator) {
+                case "eq", "ne" -> {
+                    var operatorSign = Operators.getSign(operator);
+                    queryBuilder.append(attribute).append("') ").append(operatorSign).append(" cast(:").append(paramName).append(" as text)");
+                    params.put(paramName, condition.value());
                 }
-                case "between" ->
-                    queryBuilder.append(format(" AND (p.attributes->>'%s')::NUMERIC BETWEEN %s AND %s", attribute, condition.fromValue(), condition.toValue()));
-                case "contains" ->
-                    queryBuilder.append(format(" AND (p.attributes->>'%s') ILIKE '%%%s%%'", attribute, condition.value()));
-                default -> throw new IllegalArgumentException("Unsupported operator: " + condition.operator());
+                case "gt", "lt", "gte", "lte" -> {
+                    var operatorSign = Operators.getSign(operator);
+                    queryBuilder.append(attribute).append("')::NUMERIC ").append(operatorSign).append(" :").append(paramName);
+                    params.put(paramName, condition.value());
+                }
+                case "in" -> {
+                    List<String> values = condition.values();
+                    // Create separate parameter for each value
+                    List<String> paramNames = new ArrayList<>();
+                    for (int i = 0; i < values.size(); i++) {
+                        String inParamName = paramName + "_" + i;
+                        paramNames.add(":" + inParamName);
+                        params.put(inParamName, values.get(i));
+                    }
+
+                    queryBuilder.append(attribute)
+                        .append("') IN (")
+                        .append(String.join(",", paramNames))
+                        .append(")");
+                }
+                case "between" -> {
+                    String fromParamName = "between_from_" + attribute;
+                    String toParamName = "between_to_" + attribute;
+
+                    queryBuilder.append(attribute)
+                        .append("')::NUMERIC BETWEEN :")
+                        .append(fromParamName)
+                        .append(" AND :")
+                        .append(toParamName);
+
+                    params.put(fromParamName, condition.fromValue());
+                    params.put(toParamName, condition.toValue());
+                }
+                case "contains" -> {
+                    queryBuilder.append(attribute)
+                        .append("') ILIKE :")
+                        .append(paramName);
+
+                    params.put(paramName, "%" + condition.value() + "%");
+                }
+                default -> throw new IllegalArgumentException("Unsupported operator: " + operator);
             }
         });
 
         return createQueryAndExecute(queryBuilder, params, request.sort(), request.pagination());
     }
 
-    private Page<ProductSearchResponse> createQueryAndExecute(
+    private PagedModel<ProductSearchResponse> createQueryAndExecute(
         StringBuilder queryBuilder,
         Map<String, Object> params,
         SortCriteria sort,
@@ -153,6 +200,6 @@ public class ProductSearchService {
             Sort.Direction.fromString(sort.order()), sort.field()
         );
 
-        return new PageImpl<>(result, page, total);
+        return new PagedModel<>(new PageImpl<>(result, page, total));
     }
 }
